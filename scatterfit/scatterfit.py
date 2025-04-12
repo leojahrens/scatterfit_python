@@ -61,58 +61,58 @@ class ScatterFit:
             # Binning
             "binned": kwargs.get("binned", False),
             "n_quantiles": kwargs.get("n_quantiles", 30),
-            'uni_bins': kwargs.get('uni_bins', None),
-            'discrete': kwargs.get('discrete', False),
-            'bin_var': kwargs.get('bin_var', None),
+            "uni_bins": kwargs.get("uni_bins", None),
+            "discrete": kwargs.get("discrete", False),
+            "bin_var": kwargs.get("bin_var", None),
 
             # Fit line
-            'fit': kwargs.get('fit', 'linear'),
-            'ci': kwargs.get('ci', False),
-            'level': kwargs.get('level', 95.0),
-            'bw_frac': kwargs.get('bw_frac', 0.666),
-            'fitmodel': kwargs.get('fitmodel', None),
+            "fit": kwargs.get("fit", "linear"),
+            "ci": kwargs.get("ci", False),
+            "level": kwargs.get("level", 95.0),
+            "bw_frac": kwargs.get("bw_frac", 0.666),
+            "fitmodel": kwargs.get("fitmodel", None),
 
             # Grouping
-            'by_var': kwargs.get('by_var', None),
-            'bymethod': kwargs.get('bymethod', 'stratify'),
+            "by_var": kwargs.get("by_var", None),
+            "bymethod": kwargs.get("bymethod", "stratify"),
 
             # Control variables
-            'controls': [kwargs.get('controls')] if isinstance(kwargs.get('controls'), str) else kwargs.get('controls',
+            "controls": [kwargs.get("controls")] if isinstance(kwargs.get("controls"), str) else kwargs.get("controls",
                                                                                                             None),
-            'fcontrols': [kwargs.get('fcontrols')] if isinstance(kwargs.get('fcontrols'), str) else kwargs.get(
-                'fcontrols', None),
+            "fcontrols": [kwargs.get("fcontrols")] if isinstance(kwargs.get("fcontrols"), str) else kwargs.get(
+                "fcontrols", None),
 
             # Regression parameters
-            'regparameters': kwargs.get('regparameters', None),
-            'parpos': kwargs.get('parpos', None),
-            'parsize': kwargs.get('parsize', None),
+            "regparameters": kwargs.get("regparameters", None),
+            "parpos": kwargs.get("parpos", None),
+            "parsize": kwargs.get("parsize", None),
 
             # Appearance
-            'mweighted': kwargs.get('mweighted', False),
-            'mlabel': kwargs.get('mlabel', None),
-            'jitter': kwargs.get('jitter', None),
-            'standardize': kwargs.get('standardize', False),
-            'colorscheme': kwargs.get('colorscheme', None),
-            'xdistribution': kwargs.get('xdistribution', None),
-            'xdistrbw': kwargs.get('xdistrbw', None),
+            "mweighted": kwargs.get("mweighted", False),
+            "mlabel": kwargs.get("mlabel", None),
+            "jitter": kwargs.get("jitter", None),
+            "standardize": kwargs.get("standardize", False),
+            "colorscheme": kwargs.get("colorscheme", None),
+            "xdistribution": kwargs.get("xdistribution", None),
+            "xdistrbw": kwargs.get("xdistrbw", None),
 
             # Axis titles
-            'xtitle': kwargs.get('xtitle', None),
-            'ytitle': kwargs.get('ytitle', None),
+            "xtitle": kwargs.get("xtitle", None),
+            "ytitle": kwargs.get("ytitle", None),
 
             # Technical
-            'weight_var': kwargs.get('weight_var', None),
-            'ax': kwargs.get('ax', None)
+            "weight_var": kwargs.get("weight_var", None),
+            "ax": kwargs.get("ax", None)
         }
 
         # Validate and adjust options
-        if options['fit'] not in ['linear', 'quadratic', 'cubic', 'lpoly', 'lowess', 'none']:
+        if options["fit"] not in ["linear", "quadratic", "cubic", "lpoly", "lowess", "none"]:
             print(f"Warning: Unknown fit type '{options['fit']}'. Using 'linear'.")
-            options['fit'] = 'linear'
+            options["fit"] = "linear"
 
-        if options['bymethod'] not in ['stratify', 'interact']:
+        if options["bymethod"] not in ["stratify", "interact"]:
             print(f"Warning: Unknown bymethod '{options['bymethod']}'. Using 'stratify'.")
-            options['bymethod'] = 'stratify'
+            options["bymethod"] = "stratify"
 
         return options
 
@@ -120,18 +120,18 @@ class ScatterFit:
         """Prepare the data for plotting, including handling binary DV and residualization."""
         # Collect required columns
         essential_cols = [self.y_var, self.x_var]
-        if self.options['by_var'] and self.options['by_var'] in self.data:
-            essential_cols.append(self.options['by_var'])
-        if self.options['bin_var'] and self.options['bin_var'] in self.data:
-            essential_cols.append(self.options['bin_var'])
-        if self.options['mlabel'] and self.options['mlabel'] in self.data:
-            essential_cols.append(self.options['mlabel'])
-        if self.options['controls']:
-            essential_cols.extend([c for c in self.options['controls'] if c in self.data])
-        if self.options['fcontrols']:
-            essential_cols.extend([f for f in self.options['fcontrols'] if f in self.data])
-        if self.options['weight_var'] and self.options['weight_var'] in self.data:
-            essential_cols.append(self.options['weight_var'])
+        if self.options["by_var"] and self.options["by_var"] in self.data:
+            essential_cols.append(self.options["by_var"])
+        if self.options["bin_var"] and self.options["bin_var"] in self.data:
+            essential_cols.append(self.options["bin_var"])
+        if self.options["mlabel"] and self.options["mlabel"] in self.data:
+            essential_cols.append(self.options["mlabel"])
+        if self.options["controls"]:
+            essential_cols.extend([c for c in self.options["controls"] if c in self.data])
+        if self.options["fcontrols"]:
+            essential_cols.extend([f for f in self.options["fcontrols"] if f in self.data])
+        if self.options["weight_var"] and self.options["weight_var"] in self.data:
+            essential_cols.append(self.options["weight_var"])
 
         # Use unique column names and check existence
         essential_cols = list(set(c for c in essential_cols if c in self.data))
@@ -158,7 +158,7 @@ class ScatterFit:
         y_unique_non_na = self.df[self.y_var].dropna().unique()
         if len(y_unique_non_na) == 2:
             # Check if y_var is categorical or object type and convert to numeric
-            if self.df[self.y_var].dtype.name in ['category', 'object']:
+            if self.df[self.y_var].dtype.name in ["category", "object"]:
                 print(f"Info: Converting {self.y_var} from {self.df[self.y_var].dtype} to numeric.")
                 # First convert to string to handle category type
                 y_values = self.df[self.y_var].astype(str)
@@ -172,9 +172,9 @@ class ScatterFit:
                 self.df[self.y_var] = self.df[self.y_var].map({y_min: 0, y_max: 1}).astype(float)
 
             # Adjust / warn about options in binary case
-            if not self.options['fitmodel']:
-                self.options['fitmodel'] = 'logit'
-            if not self.options['binned']:
+            if not self.options["fitmodel"]:
+                self.options["fitmodel"] = "logit"
+            if not self.options["binned"]:
                 print("Warning: Using non-binned scatter for binary DV is usually not informative.")
 
             return True
@@ -185,8 +185,8 @@ class ScatterFit:
         """Standardize variables if requested."""
         y_plot_var, x_plot_var = self.y_var, self.x_var  # Start with original names
 
-        if self.options['standardize']:
-            weight_var = self.options['weight_var']
+        if self.options["standardize"]:
+            weight_var = self.options["weight_var"]
 
             for var in [self.y_var, self.x_var]:
                 weights = self.df.loc[self.df[var].notna(), weight_var] if weight_var else None
@@ -205,18 +205,18 @@ class ScatterFit:
 
     def _residualize_if_needed(self):
         """Residualize variables if control variables are specified."""
-        if not (self.options['controls'] or self.options['fcontrols']):
+        if not (self.options["controls"] or self.options["fcontrols"]):
             return
 
         # For non-binned data, use standard residualization
-        if not self.options['binned']:
+        if not self.options["binned"]:
             self.df = self._residualize(
                 self.df,
                 self.y_var,
                 self.x_var,
-                self.options['controls'],
-                self.options['fcontrols'],
-                self.options['weight_var']
+                self.options["controls"],
+                self.options["fcontrols"],
+                self.options["weight_var"]
             )
 
             self.y_plot_var = f"{self.y_var}_resid"
@@ -239,9 +239,9 @@ class ScatterFit:
                     self.df,
                     self.y_var,
                     self.x_var,
-                    self.options['controls'],
-                    self.options['fcontrols'],
-                    self.options['weight_var']
+                    self.options["controls"],
+                    self.options["fcontrols"],
+                    self.options["weight_var"]
                 )
                 self.y_plot_var = f"{self.y_var}_resid"
                 self.x_plot_var = f"{self.x_var}_resid"
@@ -254,7 +254,7 @@ class ScatterFit:
             self.df[self.y_plot_var] = np.nan
 
             # Get by groups
-            by_var = self.options['by_var']
+            by_var = self.options["by_var"]
             by_groups = [None]
             if by_var and by_var in self.df:
                 by_groups = sorted(self.df[by_var].dropna().unique())
@@ -272,7 +272,7 @@ class ScatterFit:
                     continue
 
                 # Set up weights
-                weight_var = self.options['weight_var']
+                weight_var = self.options["weight_var"]
                 weights = self.df.loc[group_mask, weight_var] if weight_var and weight_var in self.df else None
 
                 # Build formula for regression with bin indicators and controls
@@ -282,14 +282,14 @@ class ScatterFit:
                 formula_parts.append(f"C({self.bin_col})")
 
                 # Add controls
-                if self.options['controls']:
-                    for ctrl in self.options['controls']:
+                if self.options["controls"]:
+                    for ctrl in self.options["controls"]:
                         if ctrl in self.df.columns:
                             formula_parts.append(ctrl)
 
                 # Add factor controls
-                if self.options['fcontrols']:
-                    for fctrl in self.options['fcontrols']:
+                if self.options["fcontrols"]:
+                    for fctrl in self.options["fcontrols"]:
                         if fctrl in self.df.columns:
                             formula_parts.append(f"C({fctrl})")
 
@@ -300,23 +300,23 @@ class ScatterFit:
                     # Step 1: Fit joint regression model of y on bins and controls
                     # Per Cattaneo et al. (2023), equation (2.3)
                     if weights is not None:
-                        model = smf.wls(formula, data=self.df.loc[group_mask], weights=weights, missing='drop').fit()
+                        model = smf.wls(formula, data=self.df.loc[group_mask], weights=weights, missing="drop").fit()
                     else:
-                        model = smf.ols(formula, data=self.df.loc[group_mask], missing='drop').fit()
+                        model = smf.ols(formula, data=self.df.loc[group_mask], missing="drop").fit()
 
                     # Step 2: Extract bin coefficients (β̂)
                     bin_effects = pd.Series(0.0, index=self.df.loc[group_mask].index)
 
                     # Add intercept if present
-                    if 'Intercept' in model.params:
-                        bin_effects += model.params['Intercept']
+                    if "Intercept" in model.params:
+                        bin_effects += model.params["Intercept"]
 
                     # Add bin-specific effects
                     for param_name, value in model.params.items():
                         if param_name.startswith(f"C({self.bin_col})"):
                             # Extract the bin number
                             try:
-                                bin_num = param_name.split('[T.')[-1].replace(']', '')
+                                bin_num = param_name.split("[T.")[-1].replace("]", "")
                                 # Apply the coefficient to matching observations
                                 bin_effects.loc[self.df.loc[group_mask, self.bin_col].astype(str) == bin_num] += value
                             except (IndexError, ValueError) as e:
@@ -326,8 +326,8 @@ class ScatterFit:
                     cov_means = {}
 
                     # For continuous covariates, simple mean
-                    if self.options['controls']:
-                        for ctrl in self.options['controls']:
+                    if self.options["controls"]:
+                        for ctrl in self.options["controls"]:
                             if ctrl in model.params:
                                 if weights is not None:
                                     valid_mask = ~self.df.loc[group_mask, ctrl].isna()
@@ -342,13 +342,13 @@ class ScatterFit:
                                     cov_means[ctrl] = self.df.loc[group_mask, ctrl].mean()
 
                     # For categorical covariates, proportion in each category
-                    if self.options['fcontrols']:
-                        for fctrl in self.options['fcontrols']:
+                    if self.options["fcontrols"]:
+                        for fctrl in self.options["fcontrols"]:
                             fctrl_params = [p for p in model.params.index if p.startswith(f"C({fctrl})")]
                             for param_name in fctrl_params:
                                 # Extract the category
                                 try:
-                                    category = param_name.split('[T.')[-1].replace(']', '')
+                                    category = param_name.split("[T.")[-1].replace("]", "")
                                     # Calculate proportion in this category
                                     if weights is not None:
                                         valid_mask = self.df.loc[group_mask, fctrl].astype(str) == category
@@ -422,7 +422,7 @@ class ScatterFit:
             all_valid_controls_terms.append(fcontrol_str)
 
         # Check if by_var is defined and in the data
-        by_var = self.options['by_var']
+        by_var = self.options["by_var"]
         by_var_in_data = by_var is not None and by_var in data_res.columns
 
         # Early return if no valid controls
@@ -433,8 +433,8 @@ class ScatterFit:
             # If by_var is defined, compute and store group-specific means
             if by_var_in_data:
                 # Initialize means columns
-                data_res[f'{y_var}_resid'] = data_res[y_var]
-                data_res[f'{x_var}_resid'] = data_res[x_var]
+                data_res[f"{y_var}_resid"] = data_res[y_var]
+                data_res[f"{x_var}_resid"] = data_res[x_var]
 
                 # Calculate and store group-specific means
                 for group_val in data_res[by_var].dropna().unique():
@@ -451,21 +451,21 @@ class ScatterFit:
                     x_mean = np.average(data_res.loc[group_mask, x_var].dropna(), weights=weight_mask_x)
 
                     # Store group-specific means in new columns
-                    data_res.loc[group_mask, f'y_mean_{group_val}'] = y_mean
-                    data_res.loc[group_mask, f'x_mean_{group_val}'] = x_mean
-                    data_res.loc[group_mask, 'y_mean'] = y_mean  # Also store in the common column for compatibility
-                    data_res.loc[group_mask, 'x_mean'] = x_mean
+                    data_res.loc[group_mask, f"y_mean_{group_val}"] = y_mean
+                    data_res.loc[group_mask, f"x_mean_{group_val}"] = x_mean
+                    data_res.loc[group_mask, "y_mean"] = y_mean  # Also store in the common column for compatibility
+                    data_res.loc[group_mask, "x_mean"] = x_mean
             else:
                 # Original logic for overall means
-                data_res[f'{y_var}_resid'] = data_res[y_var]
-                data_res[f'{x_var}_resid'] = data_res[x_var]
+                data_res[f"{y_var}_resid"] = data_res[y_var]
+                data_res[f"{x_var}_resid"] = data_res[x_var]
 
                 weights_for_mean = data_res[weight_var] if weight_var and weight_var in data_res else None
                 weight_mask_y = weights_for_mean[data_res[y_var].notna()] if weights_for_mean is not None else None
                 weight_mask_x = weights_for_mean[data_res[x_var].notna()] if weights_for_mean is not None else None
 
-                data_res['y_mean'] = np.average(data_res[y_var].dropna(), weights=weight_mask_y)
-                data_res['x_mean'] = np.average(data_res[x_var].dropna(), weights=weight_mask_x)
+                data_res["y_mean"] = np.average(data_res[y_var].dropna(), weights=weight_mask_y)
+                data_res["x_mean"] = np.average(data_res[x_var].dropna(), weights=weight_mask_x)
 
             # Restore original index
             self._restore_index(data_res, original_index_name)
@@ -478,8 +478,8 @@ class ScatterFit:
         # If by_var is defined, residualize and add means back by group
         if by_var_in_data:
             # Initialize residual columns
-            data_res[f'{y_var}_resid'] = np.nan
-            data_res[f'{x_var}_resid'] = np.nan
+            data_res[f"{y_var}_resid"] = np.nan
+            data_res[f"{x_var}_resid"] = np.nan
 
             # Process each group separately
             for group_val in data_res[by_var].dropna().unique():
@@ -497,10 +497,10 @@ class ScatterFit:
                 x_mean_group = np.average(group_data[x_var].dropna(), weights=group_weights_x)
 
                 # Store group-specific means
-                data_res.loc[group_mask, f'y_mean_{group_val}'] = y_mean_group
-                data_res.loc[group_mask, f'x_mean_{group_val}'] = x_mean_group
-                data_res.loc[group_mask, 'y_mean'] = y_mean_group  # Also store in common column
-                data_res.loc[group_mask, 'x_mean'] = x_mean_group
+                data_res.loc[group_mask, f"y_mean_{group_val}"] = y_mean_group
+                data_res.loc[group_mask, f"x_mean_{group_val}"] = x_mean_group
+                data_res.loc[group_mask, "y_mean"] = y_mean_group  # Also store in common column
+                data_res.loc[group_mask, "x_mean"] = x_mean_group
 
                 # Residualize Y for this group
                 self._residualize_single_variable(
@@ -517,8 +517,8 @@ class ScatterFit:
                 )
 
                 # Copy residuals back to the main dataframe
-                data_res.loc[group_mask, f'{y_var}_resid'] = group_data[f'{y_var}_resid']
-                data_res.loc[group_mask, f'{x_var}_resid'] = group_data[f'{x_var}_resid']
+                data_res.loc[group_mask, f"{y_var}_resid"] = group_data[f"{y_var}_resid"]
+                data_res.loc[group_mask, f"{x_var}_resid"] = group_data[f"{x_var}_resid"]
         else:
             # Calculate means of original variables for adding back later
             weights_y_mean = weights[data_res[y_var].notna()] if weights is not None else None
@@ -527,8 +527,8 @@ class ScatterFit:
             weights_x_mean = weights[data_res[x_var].notna()] if weights is not None else None
             x_mean_orig = np.average(data_res[x_var].dropna(), weights=weights_x_mean)
 
-            data_res['y_mean'] = y_mean_orig  # Store original mean
-            data_res['x_mean'] = x_mean_orig
+            data_res["y_mean"] = y_mean_orig  # Store original mean
+            data_res["x_mean"] = x_mean_orig
 
             # Residualize Y
             self._residualize_single_variable(
@@ -554,55 +554,55 @@ class ScatterFit:
         try:
             # Fit model
             if weights is not None:
-                model = smf.wls(formula, data=data_copy, weights=weights, missing='drop').fit()
+                model = smf.wls(formula, data=data_copy, weights=weights, missing="drop").fit()
             else:
-                model = smf.ols(formula, data=data_copy, missing='drop').fit()
+                model = smf.ols(formula, data=data_copy, missing="drop").fit()
 
             # Get residuals
             resid_series = model.resid
 
             # Assign back to data
-            data.loc[:, f'{var}_resid'] = np.nan
-            data.loc[resid_series.index, f'{var}_resid'] = resid_series + orig_mean
+            data.loc[:, f"{var}_resid"] = np.nan
+            data.loc[resid_series.index, f"{var}_resid"] = resid_series + orig_mean
 
         except Exception as e:
             print(f"Warning: Could not residualize {var}. Error: {e}")
             # Fallback: copy original data
-            data.loc[:, f'{var}_resid'] = data[var]
+            data.loc[:, f"{var}_resid"] = data[var]
 
     def _setup_binning(self):
         """Setup binning for the data if binned option is True."""
         self.bin_col = None
         self.plot_binned_means = False
 
-        if not self.options['binned']:
+        if not self.options["binned"]:
             return
 
         self.plot_binned_means = True
         self.bin_col = f"{self.x_var}_bin"
 
         try:
-            if self.options['bin_var'] and self.options['bin_var'] in self.df:
-                self.df[self.bin_col] = self.df[self.options['bin_var']]
-            elif self.options['discrete']:
+            if self.options["bin_var"] and self.options["bin_var"] in self.df:
+                self.df[self.bin_col] = self.df[self.options["bin_var"]]
+            elif self.options["discrete"]:
                 # Use factorize for discrete values
                 self.df[self.bin_col] = pd.factorize(self.df[self.x_plot_var])[0]
                 self.df.loc[self.df[self.x_plot_var].isna(), self.bin_col] = np.nan  # Propagate NAs
-            elif self.options['uni_bins'] is not None and self.options['uni_bins'] > 0:
+            elif self.options["uni_bins"] is not None and self.options["uni_bins"] > 0:
                 self.df[self.bin_col] = pd.cut(
                     self.df[self.x_plot_var],
-                    bins=self.options['uni_bins'],
+                    bins=self.options["uni_bins"],
                     labels=False,
                     include_lowest=True
                 )
-            elif self.options['n_quantiles'] > 0:  # Default to quantiles
+            elif self.options["n_quantiles"] > 0:  # Default to quantiles
                 # Handle potential non-unique edges in qcut
                 try:
                     self.df[self.bin_col] = pd.qcut(
                         self.df[self.x_plot_var],
-                        q=self.options['n_quantiles'],
+                        q=self.options["n_quantiles"],
                         labels=False,
-                        duplicates='drop'
+                        duplicates="drop"
                     )
                 except ValueError:  # If too few unique values for quantiles
                     print(f"Warning: Could not create {self.options['n_quantiles']} quantile bins. Using fewer bins.")
@@ -654,7 +654,7 @@ class ScatterFit:
             all_valid_controls_terms.append(fcontrol_str)
 
         # Check if by_var is defined and in the data
-        by_var = self.options['by_var']
+        by_var = self.options["by_var"]
         by_var_in_data = by_var is not None and by_var in data_res.columns
 
         # Early return if no valid controls
@@ -665,8 +665,8 @@ class ScatterFit:
             # If by_var is defined, compute and store group-specific means
             if by_var_in_data:
                 # Initialize means columns
-                data_res[f'{y_var}_resid'] = data_res[y_var]
-                data_res[f'{x_var}_resid'] = data_res[x_var]
+                data_res[f"{y_var}_resid"] = data_res[y_var]
+                data_res[f"{x_var}_resid"] = data_res[x_var]
 
                 # Calculate and store group-specific means
                 for group_val in data_res[by_var].dropna().unique():
@@ -683,21 +683,21 @@ class ScatterFit:
                     x_mean = np.average(data_res.loc[group_mask, x_var].dropna(), weights=weight_mask_x)
 
                     # Store group-specific means in new columns
-                    data_res.loc[group_mask, f'y_mean_{group_val}'] = y_mean
-                    data_res.loc[group_mask, f'x_mean_{group_val}'] = x_mean
-                    data_res.loc[group_mask, 'y_mean'] = y_mean  # Also store in the common column for compatibility
-                    data_res.loc[group_mask, 'x_mean'] = x_mean
+                    data_res.loc[group_mask, f"y_mean_{group_val}"] = y_mean
+                    data_res.loc[group_mask, f"x_mean_{group_val}"] = x_mean
+                    data_res.loc[group_mask, "y_mean"] = y_mean  # Also store in the common column for compatibility
+                    data_res.loc[group_mask, "x_mean"] = x_mean
             else:
                 # Original logic for overall means
-                data_res[f'{y_var}_resid'] = data_res[y_var]
-                data_res[f'{x_var}_resid'] = data_res[x_var]
+                data_res[f"{y_var}_resid"] = data_res[y_var]
+                data_res[f"{x_var}_resid"] = data_res[x_var]
 
                 weights_for_mean = data_res[weight_var] if weight_var and weight_var in data_res else None
                 weight_mask_y = weights_for_mean[data_res[y_var].notna()] if weights_for_mean is not None else None
                 weight_mask_x = weights_for_mean[data_res[x_var].notna()] if weights_for_mean is not None else None
 
-                data_res['y_mean'] = np.average(data_res[y_var].dropna(), weights=weight_mask_y)
-                data_res['x_mean'] = np.average(data_res[x_var].dropna(), weights=weight_mask_x)
+                data_res["y_mean"] = np.average(data_res[y_var].dropna(), weights=weight_mask_y)
+                data_res["x_mean"] = np.average(data_res[x_var].dropna(), weights=weight_mask_x)
 
             # Restore original index
             self._restore_index(data_res, original_index_name)
@@ -710,8 +710,8 @@ class ScatterFit:
         # If by_var is defined, residualize and add means back by group
         if by_var_in_data:
             # Initialize residual columns
-            data_res[f'{y_var}_resid'] = np.nan
-            data_res[f'{x_var}_resid'] = np.nan
+            data_res[f"{y_var}_resid"] = np.nan
+            data_res[f"{x_var}_resid"] = np.nan
 
             # Process each group separately
             for group_val in data_res[by_var].dropna().unique():
@@ -729,15 +729,15 @@ class ScatterFit:
                 x_mean_group = np.average(group_data[x_var].dropna(), weights=group_weights_x)
 
                 # Store group-specific means
-                data_res.loc[group_mask, f'y_mean_{group_val}'] = y_mean_group
-                data_res.loc[group_mask, f'x_mean_{group_val}'] = x_mean_group
-                data_res.loc[group_mask, 'y_mean'] = y_mean_group  # Also store in common column
-                data_res.loc[group_mask, 'x_mean'] = x_mean_group
+                data_res.loc[group_mask, f"y_mean_{group_val}"] = y_mean_group
+                data_res.loc[group_mask, f"x_mean_{group_val}"] = x_mean_group
+                data_res.loc[group_mask, "y_mean"] = y_mean_group  # Also store in common column
+                data_res.loc[group_mask, "x_mean"] = x_mean_group
 
                 # Residualize Y for this group
                 self._residualize_single_variable(
                     group_data, y_var, formula_controls_only,
-                    weights[group_mask] if weights is not None else None,
+                        weights[group_mask] if weights is not None else None,
                     y_mean_group
                 )
 
@@ -749,8 +749,8 @@ class ScatterFit:
                 )
 
                 # Copy residuals back to the main dataframe
-                data_res.loc[group_mask, f'{y_var}_resid'] = group_data[f'{y_var}_resid']
-                data_res.loc[group_mask, f'{x_var}_resid'] = group_data[f'{x_var}_resid']
+                data_res.loc[group_mask, f"{y_var}_resid"] = group_data[f"{y_var}_resid"]
+                data_res.loc[group_mask, f"{x_var}_resid"] = group_data[f"{x_var}_resid"]
         else:
             # Calculate means of original variables for adding back later
             weights_y_mean = weights[data_res[y_var].notna()] if weights is not None else None
@@ -759,8 +759,8 @@ class ScatterFit:
             weights_x_mean = weights[data_res[x_var].notna()] if weights is not None else None
             x_mean_orig = np.average(data_res[x_var].dropna(), weights=weights_x_mean)
 
-            data_res['y_mean'] = y_mean_orig  # Store original mean
-            data_res['x_mean'] = x_mean_orig
+            data_res["y_mean"] = y_mean_orig  # Store original mean
+            data_res["x_mean"] = x_mean_orig
 
             # Residualize Y
             self._residualize_single_variable(
@@ -786,25 +786,25 @@ class ScatterFit:
         try:
             # Fit model
             if weights is not None:
-                model = smf.wls(formula, data=data_copy, weights=weights, missing='drop').fit()
+                model = smf.wls(formula, data=data_copy, weights=weights, missing="drop").fit()
             else:
-                model = smf.ols(formula, data=data_copy, missing='drop').fit()
+                model = smf.ols(formula, data=data_copy, missing="drop").fit()
 
             # Get residuals
             resid_series = model.resid
 
             # Assign back to data
-            data.loc[:, f'{var}_resid'] = np.nan
-            data.loc[resid_series.index, f'{var}_resid'] = resid_series + orig_mean
+            data.loc[:, f"{var}_resid"] = np.nan
+            data.loc[resid_series.index, f"{var}_resid"] = resid_series + orig_mean
 
         except Exception as e:
             print(f"Warning: Could not residualize {var}. Error: {e}")
             # Fallback: copy original data
-            data.loc[:, f'{var}_resid'] = data[var]
+            data.loc[:, f"{var}_resid"] = data[var]
 
     def _restore_index(self, data, original_index_name):
         """Restore the original index to the dataframe."""
-        index_col = original_index_name if original_index_name else 'index'
+        index_col = original_index_name if original_index_name else "index"
 
         if index_col in data.columns:
             try:
@@ -843,7 +843,7 @@ class ScatterFit:
             )
 
             # Plot fit line if requested
-            if self.options['fit'] != 'none':
+            if self.options["fit"] != "none":
                 self._plot_fit_line(
                     group_data,
                     group_val,
@@ -852,7 +852,7 @@ class ScatterFit:
                 )
 
             # Add regression parameters if requested
-            if self.options['regparameters']:
+            if self.options["regparameters"]:
                 self._add_reg_params(
                     group_data,
                     group_val,
@@ -860,7 +860,7 @@ class ScatterFit:
                 )
 
         # Add KDE distribution of x variable if requested
-        if self.options['xdistribution']:
+        if self.options["xdistribution"]:
             self._add_x_distribution(scatter_color_map)
 
         # Finalize the plot
@@ -870,19 +870,19 @@ class ScatterFit:
 
     def _setup_figure(self):
         """Set up the figure and axes for plotting."""
-        if self.options['ax'] is not None:
-            self.ax = self.options['ax']
+        if self.options["ax"] is not None:
+            self.ax = self.options["ax"]
         else:
             fig, ax = plt.subplots(figsize=(10, 6))
             self.ax = ax
 
         # Style the plot
-        self.ax.grid(True, linestyle='-', alpha=0.4, color='#B0B0B0', linewidth=1)  # Darker grid lines
-        self.ax.set_facecolor('white')
-        for spine in ['top', 'right']:
+        self.ax.grid(True, linestyle="-", alpha=0.4, color="#B0B0B0", linewidth=1)  # Darker grid lines
+        self.ax.set_facecolor("white")
+        for spine in ["top", "right"]:
             self.ax.spines[spine].set_visible(False)
-        DARK_GRAY = '#555555'
-        for spine in ['bottom', 'left']:
+        DARK_GRAY = "#555555"
+        for spine in ["bottom", "left"]:
             self.ax.spines[spine].set_color(DARK_GRAY)
             self.ax.spines[spine].set_linewidth(1.3)
         self.ax.tick_params(colors=DARK_GRAY, labelsize=11.5 * self.text_scale, width=1.5)
@@ -893,15 +893,15 @@ class ScatterFit:
         fit_color_map = {}
 
         # Get unique by-groups
-        if self.options['by_var'] and self.options['by_var'] in self.df:
-            by_groups = sorted(self.df[self.options['by_var']].dropna().unique())
+        if self.options["by_var"] and self.options["by_var"] in self.df:
+            by_groups = sorted(self.df[self.options["by_var"]].dropna().unique())
         else:
             by_groups = [None]  # Default for no grouping
 
         self.by_groups = by_groups
 
         # If grouping, determine color palette
-        if self.options['by_var'] is not None and self.options['by_var'] in self.df:
+        if self.options["by_var"] is not None and self.options["by_var"] in self.df:
             num_colors = len(by_groups)
             palette = self._get_color_palette(num_colors)
             for i, group_val in enumerate(by_groups):
@@ -916,14 +916,14 @@ class ScatterFit:
 
     def _get_color_palette(self, num_colors):
         """Get a color palette based on the colorscheme option."""
-        if self.options['colorscheme'] is None:
+        if self.options["colorscheme"] is None:
             # Use default cycle
             palette_raw = [self.DEFAULT_COLOR_CYCLE[i % len(self.DEFAULT_COLOR_CYCLE)] for i in range(num_colors)]
             return [mcolors.to_rgba(c) for c in palette_raw]
 
         try:
             # Try getting a colormap
-            cmap = plt.get_cmap(self.options['colorscheme'])
+            cmap = plt.get_cmap(self.options["colorscheme"])
             palette = [cmap(i / max(1, num_colors - 1)) for i in range(num_colors)] if num_colors > 1 else [cmap(0.5)]
 
             if len(palette) < num_colors:  # Handle cases with fewer colors than needed
@@ -933,9 +933,9 @@ class ScatterFit:
 
         except ValueError:
             # Try interpreting as a list of colors
-            if isinstance(self.options['colorscheme'], list) and all(
-                    isinstance(c, (str, tuple)) for c in self.options['colorscheme']):
-                palette_raw = [self.options['colorscheme'][i % len(self.options['colorscheme'])] for i in
+            if isinstance(self.options["colorscheme"], list) and all(
+                    isinstance(c, (str, tuple)) for c in self.options["colorscheme"]):
+                palette_raw = [self.options["colorscheme"][i % len(self.options["colorscheme"])] for i in
                                range(num_colors)]
                 return [mcolors.to_rgba(c) for c in palette_raw]
             else:
@@ -951,10 +951,10 @@ class ScatterFit:
 
     def _get_group_data(self, group_val):
         """Get data for a specific group."""
-        if self.options['by_var'] and self.options['by_var'] in self.df:
+        if self.options["by_var"] and self.options["by_var"] in self.df:
             if group_val is None:
                 return pd.DataFrame()  # No data for None group if by_var is specified
-            return self.df[self.df[self.options['by_var']] == group_val].copy()
+            return self.df[self.df[self.options["by_var"]] == group_val].copy()
         else:
             return self.df.copy()  # Return all data if no grouping
 
@@ -970,15 +970,15 @@ class ScatterFit:
         try:
             # First calculate means for x and y
             agg_dict = {
-                x_var: 'mean',
-                y_var: 'mean'
+                x_var: "mean",
+                y_var: "mean"
             }
 
             # Perform aggregation
             binned_data = data.groupby(group_cols).agg(agg_dict).reset_index()
 
             # Add count column separately to avoid naming issues
-            count_data = data.groupby(group_cols).size().reset_index(name='counts')
+            count_data = data.groupby(group_cols).size().reset_index(name="counts")
             binned_data = pd.merge(binned_data, count_data, on=group_cols)
 
             # Apply weights if available
@@ -1007,7 +1007,7 @@ class ScatterFit:
     def _plot_scatter_points(self, group_data, group_val, scatter_color, legend_handles):
         """Plot scatter points for a group."""
         group_label = str(group_val) if group_val is not None else None
-        scatter_legend_label = group_label if group_label else 'Data'
+        scatter_legend_label = group_label if group_label else "Data"
 
         # Extract the base data
         x_data = group_data[self.x_plot_var]
@@ -1017,9 +1017,9 @@ class ScatterFit:
 
         # Marker size
         if self.marker_size is not None:
-            base_marker_size = plt.rcParams['lines.markersize'] ** 2 *.9 * self.marker_size
+            base_marker_size = plt.rcParams["lines.markersize"] ** 2 *.9 * self.marker_size
         else:
-            base_marker_size = plt.rcParams['lines.markersize'] ** 2 *.9
+            base_marker_size = plt.rcParams["lines.markersize"] ** 2 *.9
         point_count = len(scatter_x.dropna())
         scatter_s = base_marker_size * max(0.25, min(2.5, 1.4 * np.sqrt(400 / max(1, point_count))))
 
@@ -1030,7 +1030,7 @@ class ScatterFit:
                 self.x_plot_var,
                 self.y_plot_var,
                 self.bin_col,
-                self.options['weight_var']
+                self.options["weight_var"]
             )
 
             if not binned_group_data.empty:
@@ -1043,17 +1043,17 @@ class ScatterFit:
                 scatter_s = base_marker_size * max(0.25, min(2.5, 1.4 * np.sqrt(400 / max(1, bin_count))))
 
                 # Weight markers by bin count if requested
-                if self.options['mweighted'] and 'counts' in binned_group_data:
-                    mean_count = binned_group_data['counts'].replace(0, np.nan).mean()
+                if self.options["mweighted"] and "counts" in binned_group_data:
+                    mean_count = binned_group_data["counts"].replace(0, np.nan).mean()
 
                     if mean_count > 0:
-                        scatter_s = scatter_s * (binned_group_data['counts'] / mean_count) * 1.5
+                        scatter_s = scatter_s * (binned_group_data["counts"] / mean_count) * 1.5
                         scatter_s = np.clip(scatter_s, scatter_s * 0.2, scatter_s * 5)
                     else:
                         scatter_s = scatter_s
 
         # Apply jitter if requested (only for non-binned data)
-        if self.options['jitter'] and not self.plot_binned_means:
+        if self.options["jitter"] and not self.plot_binned_means:
             x_no_nan = scatter_x.dropna()
             y_no_nan = scatter_y.dropna()
 
@@ -1062,12 +1062,12 @@ class ScatterFit:
                 y_range = y_no_nan.max() - y_no_nan.min()
 
                 if x_range > 1e-9:
-                    x_jitter = np.random.uniform(-self.options['jitter'] / 2, self.options['jitter'] / 2,
+                    x_jitter = np.random.uniform(-self.options["jitter"] / 2, self.options["jitter"] / 2,
                                                  size=len(scatter_x)) * x_range
                     scatter_x = scatter_x.add(pd.Series(x_jitter, index=scatter_x.index), fill_value=0)
 
                 if y_range > 1e-9:
-                    y_jitter = np.random.uniform(-self.options['jitter'] / 2, self.options['jitter'] / 2,
+                    y_jitter = np.random.uniform(-self.options["jitter"] / 2, self.options["jitter"] / 2,
                                                  size=len(scatter_y)) * y_range
                     scatter_y = scatter_y.add(pd.Series(y_jitter, index=scatter_y.index), fill_value=0)
 
@@ -1077,7 +1077,7 @@ class ScatterFit:
             return scatter_legend_label
 
         # Handle marker labels if requested
-        if self.options['mlabel'] and self.options['mlabel'] in group_data.columns:
+        if self.options["mlabel"] and self.options["mlabel"] in group_data.columns:
             # Using text labels instead of markers
             handle = self.ax.scatter(
                 [], [],
@@ -1090,12 +1090,12 @@ class ScatterFit:
 
             # Plot text labels at scatter points
             for i, (x, y) in enumerate(zip(scatter_x[valid_indices], scatter_y[valid_indices])):
-                label_value = group_data.loc[valid_indices, self.options['mlabel']].iloc[i]
+                label_value = group_data.loc[valid_indices, self.options["mlabel"]].iloc[i]
                 self.ax.text(
                     x, y, str(label_value),
                     color=scatter_color,
                     fontsize=8,
-                    ha='center', va='center'
+                    ha="center", va="center"
                 )
         else:
             # Regular scatter plot
@@ -1118,16 +1118,16 @@ class ScatterFit:
         group_label = str(group_val) if group_val is not None else None
 
         # Get options
-        fit_type = self.options['fit']
-        ci = self.options['ci']
-        level = self.options['level']
-        bw_frac = self.options['bw_frac']
-        binary_model = self.options['fitmodel']
+        fit_type = self.options["fit"]
+        ci = self.options["ci"]
+        level = self.options["level"]
+        bw_frac = self.options["bw_frac"]
+        binary_model = self.options["fitmodel"]
 
         # For binary DV with controls, handle special case
-        residualized = self.y_plot_var.endswith('_resid') and self.x_plot_var.endswith('_resid')
+        residualized = self.y_plot_var.endswith("_resid") and self.x_plot_var.endswith("_resid")
 
-        if self.binary_dv and residualized and (self.options['controls'] or self.options['fcontrols']):
+        if self.binary_dv and residualized and (self.options["controls"] or self.options["fcontrols"]):
             # Get original variable names by removing '_resid' suffix
             orig_y_var = self.y_var
             orig_x_var = self.x_var
@@ -1148,15 +1148,15 @@ class ScatterFit:
             return False
 
         # Ensure y_var is numeric for binary models
-        if self.binary_dv and df_plot[fit_y_var].dtype.name in ['category', 'object']:
+        if self.binary_dv and df_plot[fit_y_var].dtype.name in ["category", "object"]:
             try:
                 # Try to convert categorical to numeric
-                if df_plot[fit_y_var].dtype.name == 'category':
+                if df_plot[fit_y_var].dtype.name == "category":
                     # For binary categorical, map to 0/1
                     if len(df_plot[fit_y_var].cat.categories) == 2:
                         df_plot[fit_y_var] = df_plot[fit_y_var].cat.codes.astype(float)
                     else:
-                        df_plot[fit_y_var] = pd.to_numeric(df_plot[fit_y_var], errors='coerce')
+                        df_plot[fit_y_var] = pd.to_numeric(df_plot[fit_y_var], errors="coerce")
                 else:
                     # For string/object type with binary values
                     unique_vals = sorted(df_plot[fit_y_var].astype(str).unique())
@@ -1166,7 +1166,7 @@ class ScatterFit:
                             {unique_vals[0]: 0, unique_vals[1]: 1}).astype(float)
                     else:
                         # Try direct conversion
-                        df_plot[fit_y_var] = pd.to_numeric(df_plot[fit_y_var], errors='coerce')
+                        df_plot[fit_y_var] = pd.to_numeric(df_plot[fit_y_var], errors="coerce")
             except Exception as e:
                 print(f"Warning: Could not convert binary y_var to numeric: {e}")
                 return False
@@ -1176,8 +1176,8 @@ class ScatterFit:
         exog_pred = pd.DataFrame({fit_x_var: x_pred_range})  # Use fit_x_var for prediction
 
         # Add mean of controls if they were used (needed for prediction)
-        controls = self.options['controls'] or []
-        fcontrols = self.options['fcontrols'] or []
+        controls = self.options["controls"] or []
+        fcontrols = self.options["fcontrols"] or []
         all_control_vars = controls + fcontrols
 
         if all_control_vars:
@@ -1190,7 +1190,7 @@ class ScatterFit:
             # For factor controls use most common category
             for fctrl in fcontrols:
                 if fctrl in df_plot:
-                    if df_plot[fctrl].dtype.name == 'category':
+                    if df_plot[fctrl].dtype.name == "category":
                         most_common = df_plot[fctrl].value_counts().idxmax()
                         exog_pred[fctrl] = most_common
                     else:
@@ -1198,7 +1198,7 @@ class ScatterFit:
                         exog_pred[fctrl] = df_plot[fctrl].mean()
 
         # Set up weights if available
-        weights = df_plot[self.options['weight_var']] if self.options['weight_var'] in df_plot else None
+        weights = df_plot[self.options["weight_var"]] if self.options["weight_var"] in df_plot else None
         alpha = 1 - level / 100.0
 
         # Fit model and plot
@@ -1227,7 +1227,7 @@ class ScatterFit:
         """Fit statistical model and plot the fit line with confidence intervals."""
         try:
             # --- LOWESS / LPOLY ---
-            if fit_type in ['lowess', 'lpoly']:
+            if fit_type in ["lowess", "lpoly"]:
                 if len(df_plot) < 3:  # Need enough points for lowess
                     print(f"Warning: Too few points ({len(df_plot)}) for LOWESS/Lpoly fit. Skipping.")
                     return False
@@ -1241,7 +1241,7 @@ class ScatterFit:
                 )
 
                 if smoothed is not None and len(smoothed) > 0:
-                    self.ax.plot(smoothed[:, 0], smoothed[:, 1], color=fit_color, lw=2.5, label='_nolegend_')
+                    self.ax.plot(smoothed[:, 0], smoothed[:, 1], color=fit_color, lw=2.5, label="_nolegend_")
                     if ci:
                         print("Warning: Confidence intervals for LOWESS/Lpoly not supported. Omitted.")
                     return True
@@ -1249,19 +1249,19 @@ class ScatterFit:
             # --- Parametric Models ---
             else:
                 formula = f"{fit_y_var} ~ "
-                if fit_type == 'linear':
+                if fit_type == "linear":
                     formula += f"{fit_x_var}"
-                elif fit_type == 'quadratic':
+                elif fit_type == "quadratic":
                     formula += f"np.power({fit_x_var}, 1) + np.power({fit_x_var}, 2)"
-                elif fit_type == 'cubic':
+                elif fit_type == "cubic":
                     formula += f"np.power({fit_x_var}, 1) + np.power({fit_x_var}, 2) + np.power({fit_x_var}, 3)"
                 else:
                     print(f"Warning: Unknown fit type '{fit_type}'. Using linear.")
                     formula += f"{fit_x_var}"
 
                 # Add controls to formula when using original variables
-                controls = self.options['controls'] or []
-                fcontrols = self.options['fcontrols'] or []
+                controls = self.options["controls"] or []
+                fcontrols = self.options["fcontrols"] or []
 
                 if controls or fcontrols:
                     # Add continuous controls
@@ -1278,18 +1278,18 @@ class ScatterFit:
 
                 # Select model type
                 model_base = smf.ols  # Default
-                model_args = {'formula': formula, 'data': df_plot}
+                model_args = {"formula": formula, "data": df_plot}
 
                 if weights is not None:
-                    model_args['weights'] = weights
+                    model_args["weights"] = weights
                     model_base = smf.wls
 
                 if self.binary_dv:
-                    if binary_model == 'logit':
+                    if binary_model == "logit":
                         model_base = smf.logit
-                    elif binary_model == 'probit':
+                    elif binary_model == "probit":
                         model_base = smf.probit
-                    elif binary_model == 'lpm':
+                    elif binary_model == "lpm":
                         pass  # Already WLS/OLS
                     else:
                         model_base = smf.logit  # Default binary to logit
@@ -1313,7 +1313,7 @@ class ScatterFit:
 
                             # Ensure we're using a value that was in the original data
                             if fctrl in exog_pred:
-                                current_value = exog_pred[fctrl].iloc[0] if hasattr(exog_pred[fctrl], 'iloc') else \
+                                current_value = exog_pred[fctrl].iloc[0] if hasattr(exog_pred[fctrl], "iloc") else \
                                 exog_pred[fctrl]
                                 # Check if current value is not in the original categories
                                 if current_value not in unique_values:
@@ -1326,7 +1326,7 @@ class ScatterFit:
                 # Get predictions
                 try:
                     # For binary models, ensure exog_pred matches the model's expected format
-                    if hasattr(model, 'model') and hasattr(model.model, 'data'):
+                    if hasattr(model, "model") and hasattr(model.model, "data"):
                         design_info = model.model.data.design_info
                         if design_info is not None:
                             from patsy import dmatrix
@@ -1344,11 +1344,11 @@ class ScatterFit:
 
                                 # Get coefficients from the model
                                 params = model.params
-                                intercept = params.get('Intercept', 0)
+                                intercept = params.get("Intercept", 0)
                                 slope = params.get(fit_x_var, 0)
 
                                 # Simple prediction for linear model
-                                if fit_type == 'linear':
+                                if fit_type == "linear":
                                     y_pred_values = intercept + slope * x_values
                                 else:
                                     # Fallback for other models - use linear approximation
@@ -1358,14 +1358,14 @@ class ScatterFit:
                                 # Create a DataFrame similar to pred.summary_frame()
                                 import pandas as pd
                                 pred_df = pd.DataFrame({
-                                    'mean': y_pred_values,
+                                    "mean": y_pred_values,
                                 })
 
                                 # Skip confidence intervals in manual prediction
                                 ci_lower = ci_upper = None
 
                                 # Plot the fit line
-                                self.ax.plot(x_pred_range, y_pred_values, color=fit_color, lw=2.5, label='_nolegend_')
+                                self.ax.plot(x_pred_range, y_pred_values, color=fit_color, lw=2.5, label="_nolegend_")
                                 return True
                         else:
                             pred = model.get_prediction(exog_pred)
@@ -1375,18 +1375,18 @@ class ScatterFit:
                     pred_df = pred.summary_frame(alpha=alpha)
 
                     # Handle different column name formats from statsmodels
-                    if 'mean' in pred_df.columns:
-                        y_pred = pred_df['mean']
-                        ci_lower = pred_df.get('mean_ci_lower', None)
-                        ci_upper = pred_df.get('mean_ci_upper', None)
-                    elif 'predicted' in pred_df.columns:
-                        y_pred = pred_df['predicted']
-                        ci_lower = pred_df.get('ci_lower', None)
-                        ci_upper = pred_df.get('ci_upper', None)
-                    elif 'predicted_mean' in pred_df.columns:
-                        y_pred = pred_df['predicted_mean']
-                        ci_lower = pred_df.get('obs_ci_lower', None)
-                        ci_upper = pred_df.get('obs_ci_upper', None)
+                    if "mean" in pred_df.columns:
+                        y_pred = pred_df["mean"]
+                        ci_lower = pred_df.get("mean_ci_lower", None)
+                        ci_upper = pred_df.get("mean_ci_upper", None)
+                    elif "predicted" in pred_df.columns:
+                        y_pred = pred_df["predicted"]
+                        ci_lower = pred_df.get("ci_lower", None)
+                        ci_upper = pred_df.get("ci_upper", None)
+                    elif "predicted_mean" in pred_df.columns:
+                        y_pred = pred_df["predicted_mean"]
+                        ci_lower = pred_df.get("obs_ci_lower", None)
+                        ci_upper = pred_df.get("obs_ci_upper", None)
                     else:
                         # Fallback to first column
                         print(f"Warning: Unexpected prediction columns: {pred_df.columns}")
@@ -1394,13 +1394,13 @@ class ScatterFit:
                         ci_lower = ci_upper = None
 
                     # Plot the fit line
-                    self.ax.plot(x_pred_range, y_pred, color=fit_color, lw=2.5, label='_nolegend_')
+                    self.ax.plot(x_pred_range, y_pred, color=fit_color, lw=2.5, label="_nolegend_")
 
                     # Add confidence intervals if requested
                     if ci and ci_lower is not None and ci_upper is not None:
                         self.ax.fill_between(
                             x_pred_range, ci_lower, ci_upper,
-                            color=fit_color, alpha=0.2, label='_nolegend_'
+                            color=fit_color, alpha=0.2, label="_nolegend_"
                         )
 
                     return True
@@ -1413,13 +1413,13 @@ class ScatterFit:
                     # Fallback: try to plot a simplified fit line
                     try:
                         # Get coefficients directly
-                        intercept = model.params.get('Intercept', 0)
+                        intercept = model.params.get("Intercept", 0)
                         slope = model.params.get(fit_x_var, 0)
 
                         # Plot a simple linear fit even if the original model was more complex
                         y_pred_simple = intercept + slope * x_pred_range
                         self.ax.plot(x_pred_range, y_pred_simple, color=fit_color, lw=2.5,
-                                     linestyle='--', label='_nolegend_')
+                                     linestyle="--", label="_nolegend_")
 
                         print("Warning: Using simplified linear approximation for fit line.")
                         return True
@@ -1435,46 +1435,46 @@ class ScatterFit:
 
     def _add_reg_params(self, group_data, group_val, color):
         """Add regression parameters to the plot."""
-        if not self.options['regparameters']:
+        if not self.options["regparameters"]:
             return
 
-        regparameters = self.options['regparameters']
-        by_var = self.options['by_var']
-        bymethod = self.options['bymethod']
+        regparameters = self.options["regparameters"]
+        by_var = self.options["by_var"]
+        bymethod = self.options["bymethod"]
 
         # Filter data
         df_reg = group_data.dropna(
             subset=[self.y_plot_var, self.x_plot_var] +
-                   (self.options['controls'] or []) +
-                   (self.options['fcontrols'] or [])
+                   (self.options["controls"] or []) +
+                   (self.options["fcontrols"] or [])
         ).copy()
 
         if df_reg.empty:
             return
 
         # Setup weights
-        weights = df_reg[self.options['weight_var']] if self.options['weight_var'] in df_reg else None
+        weights = df_reg[self.options["weight_var"]] if self.options["weight_var"] in df_reg else None
 
         # --- Build Formula ---
         formula = f"{self.y_plot_var} ~ {self.x_plot_var}"  # Base linear relationship
 
         # Handle interaction method
-        if by_var and bymethod == 'interact':
+        if by_var and bymethod == "interact":
             formula += f" * C({by_var})"
 
         # Add controls
-        if self.options['controls']:
-            formula += " + " + " + ".join(self.options['controls'])
-        if self.options['fcontrols']:
-            formula += " + " + " + ".join([f"C({f})" for f in self.options['fcontrols']])
+        if self.options["controls"]:
+            formula += " + " + " + ".join(self.options["controls"])
+        if self.options["fcontrols"]:
+            formula += " + " + " + ".join([f"C({f})" for f in self.options["fcontrols"]])
 
         # --- Fit Model ---
         try:
             model_base = smf.ols
-            model_args = {'formula': formula, 'data': df_reg}
+            model_args = {"formula": formula, "data": df_reg}
 
             if weights is not None:
-                model_args['weights'] = weights
+                model_args["weights"] = weights
                 model_base = smf.wls
 
             model = model_base(**model_args).fit(disp=False)
@@ -1494,7 +1494,7 @@ class ScatterFit:
 
         # Determine which coefficient/interaction to extract based on bymethod
         if by_var:
-            if bymethod == 'stratify':
+            if bymethod == "stratify":
                 # Refit on the subset for stratified parameters
                 try:
                     df_subset = df_reg[df_reg[by_var] == group_val]
@@ -1504,20 +1504,20 @@ class ScatterFit:
                     # Build formula without interaction for subset
                     formula_strat = f"{self.y_plot_var} ~ {self.x_plot_var}"
 
-                    if self.options['controls']:
-                        formula_strat += " + " + " + ".join(self.options['controls'])
-                    if self.options['fcontrols']:
-                        formula_strat += " + " + " + ".join([f"C({f})" for f in self.options['fcontrols']])
+                    if self.options["controls"]:
+                        formula_strat += " + " + " + ".join(self.options["controls"])
+                    if self.options["fcontrols"]:
+                        formula_strat += " + " + " + ".join([f"C({f})" for f in self.options["fcontrols"]])
 
-                    model_args_strat = {'formula': formula_strat, 'data': df_subset}
+                    model_args_strat = {"formula": formula_strat, "data": df_subset}
 
                     if weights is not None:
-                        subset_weights = df_subset[self.options['weight_var']].dropna()
+                        subset_weights = df_subset[self.options["weight_var"]].dropna()
                         if subset_weights.empty and len(df_subset) > 0:
                             print(f"Warning: No valid weights for group {group_val}, using unweighted params.")
                             model_base_strat = smf.ols
                         else:
-                            model_args_strat['weights'] = subset_weights
+                            model_args_strat["weights"] = subset_weights
                             model_base_strat = smf.wls
                     else:
                         model_base_strat = smf.ols
@@ -1533,32 +1533,32 @@ class ScatterFit:
                     print(f"Warning: Could not fit stratified regression for group {group_val}. Error: {e}")
                     return  # Skip params for this group
 
-            elif bymethod == 'interact':
+            elif bymethod == "interact":
                 # Extract marginal effect for this group and interaction terms
                 try:
                     base_x_row = results_summary.loc[self.x_plot_var]
-                    base_x_coef = base_x_row['Coef.']
+                    base_x_coef = base_x_row["Coef."]
 
                     # Find reference level (first unique value encountered by patsy)
                     ref_level = \
-                    model.model.data.frame[by_var].iloc[model.model.data.row_labels].astype('category').cat.categories[
+                    model.model.data.frame[by_var].iloc[model.model.data.row_labels].astype("category").cat.categories[
                         0]
 
                     if group_val == ref_level:  # Current group is the reference level
                         current_x_coef = base_x_coef
-                        current_x_pval = base_x_row['P>|t|']  # P-value of base slope
+                        current_x_pval = base_x_row["P>|t|"]  # P-value of base slope
                     else:
                         # Find interaction term coefficient for this specific level
                         interaction_term = f"{self.x_plot_var}:C({by_var})[T.{group_val}]"
                         if interaction_term in results_summary.index:
                             int_row = results_summary.loc[interaction_term]
-                            int_coef = int_row['Coef.']
+                            int_coef = int_row["Coef."]
                             current_x_coef = base_x_coef + int_coef
                             current_x_pval = np.nan  # P-value requires delta method
                             target_int_params.append({
-                                'name': interaction_term,
-                                'coef': int_coef,
-                                'pval': int_row['P>|t|']
+                                "name": interaction_term,
+                                "coef": int_coef,
+                                "pval": int_row["P>|t|"]
                             })
                         else:
                             print(f"Warning: Could not find interaction term {interaction_term}.")
@@ -1570,58 +1570,58 @@ class ScatterFit:
                     return  # Skip params for this group
 
         # --- Build Text String ---
-        param_map = {'coef': 'Coef.', 'se': 'Std.Err.', 'pval': 'P>|t|'}
-        sig_levels = {0.01: '***', 0.05: '**', 0.1: '*'}
+        param_map = {"coef": "Coef.", "se": "Std.Err.", "pval": "P>|t|"}
+        sig_levels = {0.01: "***", 0.05: "**", 0.1: "*"}
 
-        # Add parameters based on 'regparameters' list
+        # Add parameters based on "regparameters" list
         line_content = []
         group_prefix = f"{group_val}: " if by_var else ""
 
         # Main Slope Coefficient
-        if 'coef' in regparameters or 'sig' in regparameters:
+        if "coef" in regparameters or "sig" in regparameters:
             coef_val = np.nan
             pval_val = np.nan
             se_val = np.nan
 
-            if by_var and bymethod == 'interact':
+            if by_var and bymethod == "interact":
                 coef_val = current_x_coef
                 pval_val = current_x_pval  # This is approximate (base or nan)
                 # SE not easily available without margins
             elif target_x_param in results_summary.index:
                 row = results_summary.loc[target_x_param]
-                coef_val = row[param_map['coef']]
-                pval_val = row[param_map['pval']]
-                se_val = row[param_map['se']]
+                coef_val = row[param_map["coef"]]
+                pval_val = row[param_map["pval"]]
+                se_val = row[param_map["se"]]
 
             if not pd.isna(coef_val):
-                sig_star = ''
+                sig_star = ""
                 if not pd.isna(pval_val):
                     for level, stars in sig_levels.items():
                         if pval_val < level:
                             sig_star = stars
                             break
-                if 'coef' in regparameters:
+                if "coef" in regparameters:
                     line_content.append(f"β={coef_val:.3f}{sig_star}")
-                elif 'sig' in regparameters:
+                elif "sig" in regparameters:
                     line_content.append(sig_star)  # Just add stars if coef not requested
 
-            if 'se' in regparameters and not pd.isna(se_val):
+            if "se" in regparameters and not pd.isna(se_val):
                 line_content.append(f"(SE={se_val:.3f})")
-            if 'pval' in regparameters and not pd.isna(pval_val):
+            if "pval" in regparameters and not pd.isna(pval_val):
                 # Avoid showing approximate p-value for interaction marginal effect
-                if not (by_var and bymethod == 'interact' and group_val != ref_level):
+                if not (by_var and bymethod == "interact" and group_val != ref_level):
                     line_content.append(f"(p={pval_val:.3f})")
 
         if line_content:
             param_text_lines.append(group_prefix + " ".join(line_content))
 
         # Interaction Terms (only if bymethod='interact')
-        if 'int' in regparameters and by_var and bymethod == 'interact':
+        if "int" in regparameters and by_var and bymethod == "interact":
             for int_p in target_int_params:
                 int_line = []
-                int_coef = int_p['coef']
-                int_pval = int_p['pval']
-                sig_star = ''
+                int_coef = int_p["coef"]
+                int_pval = int_p["pval"]
+                sig_star = ""
                 for level, stars in sig_levels.items():
                     if int_pval < level:
                         sig_star = stars
@@ -1629,25 +1629,25 @@ class ScatterFit:
 
                 # Extract interacting level name cleanly
                 try:
-                    level_name = int_p['name'].split(':')[-1].split('[T.')[-1].replace(']', '')
+                    level_name = int_p["name"].split(":")[-1].split("[T.")[-1].replace("]", "")
                 except:
-                    level_name = 'Int'
+                    level_name = "Int"
 
                 int_line.append(f"β_int({level_name})={int_coef:.3f}{sig_star}")
-                if 'pval' in regparameters:
+                if "pval" in regparameters:
                     int_line.append(f"(p={int_pval:.3f})")
 
                 param_text_lines.append("  " + " ".join(int_line))  # Indent interaction term
 
         # R-squared and N (show only once if interact, or per group if stratify)
-        show_stats = not (by_var and bymethod == 'interact' and group_val != ref_level) or not by_var
+        show_stats = not (by_var and bymethod == "interact" and group_val != ref_level) or not by_var
         if show_stats:
             stats_line = []
-            if 'r2' in regparameters:
+            if "r2" in regparameters:
                 stats_line.append(f"R²={rsquared:.3f}")
-            if 'adjr2' in regparameters:
+            if "adjr2" in regparameters:
                 stats_line.append(f"Adj.R²={rsquared_adj:.3f}")
-            if 'nobs' in regparameters:
+            if "nobs" in regparameters:
                 stats_line.append(f"N={nobs}")
 
             if stats_line:
@@ -1659,44 +1659,44 @@ class ScatterFit:
         # --- Add to Plot ---
         if full_text:
             # Position calculation
-            parpos = self.options['parpos']
+            parpos = self.options["parpos"]
             if parpos:
                 try:
                     pos = [float(p) for p in parpos.split()]
                     x_pos, y_pos = pos[0], pos[1]
-                    ha, va = 'left', 'bottom'
+                    ha, va = "left", "bottom"
                     if x_pos > 0.5:
-                        ha = 'right'
+                        ha = "right"
                     if y_pos > 0.5:
-                        va = 'top'
+                        va = "top"
                 except:
                     print("Warning: Invalid parpos format. Using auto position.")
-                    x_pos, y_pos, ha, va = 0.98, 0.98, 'right', 'top'
+                    x_pos, y_pos, ha, va = 0.98, 0.98, "right", "top"
             else:
-                x_pos, y_pos, ha, va = 0.98, 0.98, 'right', 'top'  # Default: top-right
+                x_pos, y_pos, ha, va = 0.98, 0.98, "right", "top"  # Default: top-right
 
             # Color code stratified text
-            text_color = color if (by_var and bymethod == 'stratify') else self.DEFAULT_TEXT_COLOR
+            text_color = color if (by_var and bymethod == "stratify") else self.DEFAULT_TEXT_COLOR
 
             # Add text
             self.ax.text(
                 x_pos, y_pos, full_text,
                 transform=self.ax.transAxes,
-                fontsize=self.options['parsize'] if self.options['parsize'] else 10 * self.text_scale,
-                ha=ha, va=va, color=text_color, horizontalalignment='center',
-                bbox=dict(boxstyle='round,pad=0.4', fc='white', alpha=0.7, ec='#555555', lw=1)
+                fontsize=self.options["parsize"] if self.options["parsize"] else 10 * self.text_scale,
+                ha=ha, va=va, color=text_color, horizontalalignment="center",
+                bbox=dict(boxstyle="round,pad=0.4", fc="white", alpha=0.7, ec="#555555", lw=1)
             )
 
     def _add_x_distribution(self, scatter_color_map):
         """Add kernel density plot of x variable distribution."""
-        if not self.options['xdistribution']:
+        if not self.options["xdistribution"]:
             return
 
         # Parse x distribution options
         kde_height_ratio = 0.15
-        kde_pos_req = 'auto'  # Default
+        kde_pos_req = "auto"  # Default
 
-        dist_parts = self.options['xdistribution'].split()
+        dist_parts = self.options["xdistribution"].split()
         if len(dist_parts) > 0:
             kde_pos_req = dist_parts[0].lower()
         if len(dist_parts) > 1:
@@ -1706,11 +1706,11 @@ class ScatterFit:
                 print("Warning: Invalid height ratio for xdistribution. Using default.")
 
         # Validate position
-        if kde_pos_req not in ['top', 'bottom', 'auto']:
+        if kde_pos_req not in ["top", "bottom", "auto"]:
             print("Warning: Invalid xdistribution position. Use 'top', 'bottom', or 'auto'. Defaulting to 'top'.")
-            kde_pos = 'top'
-        elif kde_pos_req == 'auto':
-            kde_pos = 'top'
+            kde_pos = "top"
+        elif kde_pos_req == "auto":
+            kde_pos = "top"
         else:
             kde_pos = kde_pos_req
 
@@ -1718,25 +1718,25 @@ class ScatterFit:
             # Create the KDE axes
             divider = make_axes_locatable(self.ax)
 
-            if kde_pos == 'top':
+            if kde_pos == "top":
                 kde_ax = divider.append_axes("top", size=f"{kde_height_ratio * 100}%", pad=0.05, sharex=self.ax)
                 kde_ax.xaxis.set_tick_params(labelbottom=False)
-            elif kde_pos == 'bottom':
+            elif kde_pos == "bottom":
                 kde_ax = divider.append_axes("bottom", size=f"{kde_height_ratio * 100}%", pad=0.05, sharex=self.ax)
                 self.ax.xaxis.set_tick_params(labelbottom=False)
 
             # Style the KDE axes
             kde_ax.yaxis.set_major_locator(mticker.NullLocator())
-            kde_ax.tick_params(axis='x', colors=self.DEFAULT_TEXT_COLOR, labelsize=8)
-            kde_ax.set_facecolor('white')
+            kde_ax.tick_params(axis="x", colors=self.DEFAULT_TEXT_COLOR, labelsize=8)
+            kde_ax.set_facecolor("white")
 
-            for spine in ['top', 'right', 'left']:
+            for spine in ["top", "right", "left"]:
                 kde_ax.spines[spine].set_visible(False)
 
-            kde_ax.spines['bottom'].set_color(self.DEFAULT_EDGE_COLOR)
+            kde_ax.spines["bottom"].set_color(self.DEFAULT_EDGE_COLOR)
 
-            if kde_pos == 'bottom':
-                self.ax.spines['bottom'].set_visible(False)
+            if kde_pos == "bottom":
+                self.ax.spines["bottom"].set_visible(False)
 
             # Plot KDE for each group or overall
             for group_val in self.by_groups:
@@ -1749,7 +1749,7 @@ class ScatterFit:
                     if len(x_kde_data) > 1:
                         try:
                             # Create KDE
-                            kde = gaussian_kde(x_kde_data, bw_method=self.options['xdistrbw'])
+                            kde = gaussian_kde(x_kde_data, bw_method=self.options["xdistrbw"])
                             x_range = np.linspace(x_kde_data.min(), x_kde_data.max(), 200)
                             kde_y = kde(x_range)
 
@@ -1761,7 +1761,7 @@ class ScatterFit:
                             print(f"Warning: Could not compute KDE for group {group_val}. Error: {e}")
 
             # Add density label
-            kde_ax.set_ylabel('Density', fontsize=8, color=self.DEFAULT_TEXT_COLOR)
+            kde_ax.set_ylabel("Density", fontsize=8, color=self.DEFAULT_TEXT_COLOR)
             kde_ax.yaxis.set_label_coords(-0.01, 0.5)
 
             # Store the KDE axis
@@ -1780,19 +1780,19 @@ class ScatterFit:
                 labels=legend_handles.keys(),
                 fontsize=10,
                 frameon=True,
-                facecolor='white',
+                facecolor="white",
                 edgecolor=self.DEFAULT_EDGE_COLOR,
                 borderpad=0.8,
-                loc='best'
+                loc="best"
             )
 
         # Set axis labels with larger font sizes
-        final_xlabel = self.options['xtitle'] if self.options['xtitle'] is not None else self.x_var
-        final_ylabel = self.options['ytitle'] if self.options['ytitle'] is not None else self.y_var
+        final_xlabel = self.options["xtitle"] if self.options["xtitle"] is not None else self.x_var
+        final_ylabel = self.options["ytitle"] if self.options["ytitle"] is not None else self.y_var
 
         # Apply labels to the correct axes, considering KDE plot position
-        if self.kde_ax and hasattr(self.options['xdistribution'], 'split') and self.options['xdistribution'].split()[
-            0].lower() == 'bottom':
+        if self.kde_ax and hasattr(self.options["xdistribution"], "split") and self.options["xdistribution"].split()[
+            0].lower() == "bottom":
             # If KDE is on bottom, KDE axis gets the x label
             self.kde_ax.set_xlabel(final_xlabel, color=self.DEFAULT_TEXT_COLOR, size=14* self.text_scale)
             self.ax.set_xlabel("")
@@ -1804,9 +1804,9 @@ class ScatterFit:
 
         # Set title color if exists
         if self.ax.get_title():
-            self.ax.title.set_color('black')
+            self.ax.title.set_color("black")
             self.ax.title.set_size(16* self.text_scale)
-            self.ax.title.set_fontweight('bold')
+            self.ax.title.set_fontweight("bold")
 
         # Adjust layout
         try:

@@ -5,4 +5,4 @@ def scatterfit(*args, **kwargs):
     return _scatterfit(*args, **kwargs)
 
 __all__ = ['scatterfit']
-__version__ = "0.1.0"
+__version__ = "0.1.1"
