@@ -1,11 +1,10 @@
 # imports
 import matplotlib
 import matplotlib.pyplot as plt
-#matplotlib.use('TkAgg')
 %matplotlib
 import numpy as np
 import pandas as pd
-import scatterfit as sf
+from scatterfit import scatterfit
 
 # Create dummy data or load your 'cpds' DataFrame
 np.random.seed(234)
